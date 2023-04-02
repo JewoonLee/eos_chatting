@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
-
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 import 'package:eos_chatting/screens/main_screen.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:eos_chatting/chatting/chat/chat_bubble.dart';
 
-void main() {
-  runApp(const MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  runApp(const MaterialApp(debugShowCheckedModeBanner: false, home: ChatScreen()));
 }
 
 class MyApp extends StatelessWidget {
@@ -16,7 +21,7 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           primarySwatch: Colors.blue,
         ),
-        home: LoginSignUpScreen()
+        home: ChatScreen()
     );
   }
 }
