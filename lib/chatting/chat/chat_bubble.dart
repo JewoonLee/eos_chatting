@@ -1,49 +1,67 @@
 import 'package:eos_chatting/config/palette.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-class ChatScreen extends StatefulWidget {
-  const ChatScreen({super.key});
-  @override
-  State<ChatScreen> createState() => _ChatScreenState();
-}
 
-class _ChatScreenState extends State<ChatScreen> {
-  void initState() {
-    super.initState();
-  }
+
+class ChatBubble extends StatelessWidget {
+  final String message;
+  final bool isMe;
+  final String userName;
+
+  const ChatBubble(this.message, this.isMe, this.userName, {Key? key})
+      : super(key: key);
+
+//TODO 1 : 변수를 final로 선언
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Palette.chatbackgroundColor,
-        title: Text('Chat Screen'),
-        leading: IconButton(
-          icon: Icon(Icons.chevron_left),
-          onPressed: () {},
-      ),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.exit_to_app),
-            onPressed: () {},
+    return Row(
+      mainAxisAlignment: isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
+      children: [
+        Padding(
+          padding: EdgeInsets.only(
+            left: isMe ? 5.0 : 0.0,
+            right: isMe ? 0.0 : 5.0, // TODO 3 : 나일때랑 아닐때 나누기, padding은 5
           ),
-      ],
-        ),
-
-// TODO : 사진보고 AppBar 만들기^^
-// TODO : 색은 아무거나 해도 되는데 이왕 하는거 Palette.dart에 추가해서 하는 센스^^
-      body: StreamBuilder(
-        stream: FirebaseFirestore.instance.collection('/chats/1WZc9KXj3WlggAibBkvT/message').snapshots(),
-        builder: (BuildContext context,
-            AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(
-              child: CircularProgressIndicator(),);}
-          final docs = snapshot.data!.docs;
-          return ListView.builder(
-              itemCount: docs.length,
-              itemBuilder: (context, index) {
-                return Container(
-                  padding: EdgeInsets.all(8.0),
+          child: Column // TODO 4: Column 또는 Row
+            (
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (!isMe)
+                Padding(
+                  padding: EdgeInsets.only(left: 10.0),
                   child: Text(
-                      docs[index]['text'],style: TextStyle(fontSize: 20.0),));});},),
-    );}}
+                    userName,
+                    style: TextStyle(color: Colors.grey),
+                  ),
+                ),
+// TODO 5: 내가 아닐때는 닉네임이 위에 있어야겠죠? 왼쪽에 padding 10, 색은 grey
+              Container(
+                  decoration: BoxDecoration(
+                    color: isMe ? Colors.lightGreen : Colors.black12,
+                    //TODO 6: 나일때는 lightGreen, 아닐때는 black12
+                    borderRadius: isMe ? BorderRadius.only() : BorderRadius
+                        .only(),
+                  ),
+//TODO 7: 디자인을 보고 한번 해보세요 (나일떄, 아닐때 구분하기!)),
+                  constraints: BoxConstraints(
+                      maxWidth: MediaQuery
+                          .of(context)
+                          .size
+                          .width * 0.7
+                  ),
+                  padding: EdgeInsets.symmetric(
+                      vertical: 10.0, horizontal: 16.0),
+                  margin: EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
+// TODO 8: padding은 위아래 10, 좌우 16, margin은 위아래 4, 좌우 8
+                  child: Text(
+                    message,
+                    style: TextStyle(color: isMe ? Colors.white : Colors
+                        .black), // TODO 9: 색은 나일때는 흰색, 아닐때는 검은색
+                  )),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}

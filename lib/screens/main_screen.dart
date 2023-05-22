@@ -1,5 +1,8 @@
+import 'package:eos_chatting/screens/chat_screen.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import '../config/palette.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class LoginSignUpScreen extends StatefulWidget {
   const LoginSignUpScreen({Key? key}) : super(key: key);
@@ -9,300 +12,414 @@ class LoginSignUpScreen extends StatefulWidget {
 }
 
 class _LoginSignUpScreenState extends State<LoginSignUpScreen> {
-  late String isSignupScreen="";
-  bool _isLoginButtonPressed = true;
-  bool _isSignupButtonPressed = false;
-  TextEditingController _controller = TextEditingController();
+  final _authentication = FirebaseAuth.instance;
+
+  // login 과 signup의 state 저장
+  bool isSignupScreen = true;
+
+  String userName = '';
+  String userEmail = '';
+  String userPassword = '';
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Palette.backgroundColor,
+      // 위젯을 원하는 곳에 위치 시킬 수 있다.
       body: Stack(
-          children:   [
-            Positioned(
-            // TODO : top, left, right 모두0으로 설정
+        children: [
+          // 배경
+          Positioned(
               top: 0,
-              left: 0,
               right: 0,
+              left: 0,
               child: Container(
-                // TODO : height 300으로 설정
                 height: 300,
                 decoration: BoxDecoration(
                   image: DecorationImage(
-                    // TODO : background.png 넣기
-                    image: AssetImage('assets/images/background.png'),
-                    fit: BoxFit.fill),),
-              child: Container(
-                // TODO : padding top 90, left 20
-                padding: EdgeInsets.only(top:90, left: 20,),
-                child: Column(
-                  // TODO : 왼쪽 정렬,
-                  crossAxisAlignment:  CrossAxisAlignment.start,
-                  children: [
-                    RichText(
-                        text: TextSpan(
-                        // TODO : letter spacing 1.0, font size 25, color white
-                          text: 'Welcome',
-                          style: TextStyle(
-                            letterSpacing: 1.0, fontSize: 25, color: Colors.white),
-                          children: _isLoginButtonPressed == true
-                            ? [
-                            TextSpan(
-                              // TODO : letter spacing 1.0, font size 25, color white, bold
-                                text: ' back',
-                                style: TextStyle(
+                      image: AssetImage('assets/background.png'),
+                      fit: BoxFit.fill),
+                ),
+                child: Container(
+                  padding: EdgeInsets.only(top: 90, left: 20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      RichText(
+                          text: TextSpan(
+                              text: 'Welcome',
+                              style: TextStyle(
                                   letterSpacing: 1.0,
                                   fontSize: 25,
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,))]
-                              :[
-                            TextSpan(
-                              // TODO : letter spacing 1.0, font size 25, color white, bold
-                              text: ' to EOS chat',
-                              style: TextStyle(
-                              letterSpacing: 1.0,
-                              fontSize: 25,
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,))]
-              )),
-                    SizedBox(),
-                    Text( _isSignupButtonPressed== true ? 'Signin to continue' : 'Signup to continue',
-                      style: TextStyle(color: Colors.white),
-                    )],),),)),
-            AnimatedPositioned(// TODO : top 150
-              duration: Duration( milliseconds:500),
-              curve: Curves.easeIn,
-              top:150,
-              child: AnimatedContainer(
-                duration: Duration( milliseconds:500),
-                curve: Curves.easeIn,
-                // TODO : height 280.0, padding 모두 20, width 핸드폰 가로 길이 – 40
-                // TODO : margin 가로로 양쪽 20
-                height: _isLoginButtonPressed == true ? 250.0 : 280.0,
-                padding: EdgeInsets.all(20),
-                width: MediaQuery.of(context).size.width - 40,
-                margin: EdgeInsets.only(left: 20, right: 20),
-                decoration: BoxDecoration(// TODO : color white, border radius 15
-                  color: Colors.white, borderRadius: BorderRadius.all(Radius.circular(15)),
-                  boxShadow: [
-                    BoxShadow(// TODO : color black, 투명도 0.3, blur radius 15, spread radius 5
-                      color: Colors.black.withOpacity(0.3),
-                      blurRadius: 15,
-                      spreadRadius: 5,)]),
-                child: Column(
-                  children: [
-                    Row(// TODO : mainAxisAlignment.spaceAround
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            _isLoginButtonPressed = true;
-                            _isSignupButtonPressed = false;
-                          });
-                        },
-                        child: Column(
-                          children: [
-                             Text(
-                              // TODO : font size 16, bold
-                              // TODO : palette의 textcolor1
-                               'LOGIN',
-                               style: TextStyle(
-                                 fontSize: 16,
-                                 fontWeight: FontWeight.bold,
-                                 color: _isLoginButtonPressed==true ? Palette.activeColor: Palette.textColor1
-                               ),
-                              ),
-                            Container(
-                            // TODO : margin top만 3, height 2, width 55, color green
-                              margin: EdgeInsets.only(top: 3),
-                              height: 2,
-                              width: 55,
-                              color: _isLoginButtonPressed==true ? Colors.green : null)
-                          ],
-                        ),),
-                      GestureDetector(
-                        onTap: (){
-                          setState(() {
-                            _isLoginButtonPressed = false;
-                            _isSignupButtonPressed = true;
-                          });
-                        },
-                        child: Column(
-                          children: [
-                            Text(
-                              // TODO : font size 16, bold
-                              // TODO : palette의 active colo
-                              'SIGNUP',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: _isSignupButtonPressed ==true ? Palette.activeColor : Palette.textColor1),),
-                          Container(
-                            // TODO : margin top만 3, height 2, width 55, color green
-                            margin: EdgeInsets.only(top: 3),
-                            height: 2,
-                            width: 55,
-                            color: _isSignupButtonPressed == true? Colors.green:null )],))],),
-
-                    Container(
-                      margin: EdgeInsets.only(top: 10),
-                      child: Form(
-                        child: Column(
-                          children: _isLoginButtonPressed==true
-                          ?[
-
-                            TextFormField(
-                              decoration: InputDecoration(
-                                  // TODO : prefix icon 원하는 icon 입력, color는 palette의 iconColor
-                                prefixIcon: Icon(Icons.email, color: Palette.iconColor,),
-                                enabledBorder: OutlineInputBorder(
-
-                                    // TODO : borderside 색은 palette의 textColot1
-                                    // TODO : border radius는 모두 35
-                                      borderSide: BorderSide(color: Palette.textColor1),
-                                    borderRadius: BorderRadius.all(Radius.circular(35))
-                                  ),
-                                  focusedBorder: OutlineInputBorder(
-                                    // TODO : borderside 색은 palette의 textColot1
-                                    // TODO : border radius는 모두 35
-                                    borderSide: BorderSide(color: Palette.textColor1),
-                                    borderRadius: BorderRadius.all(Radius.circular(35))
-                                ),
-                              hintText: 'email'),),
-                            SizedBox(height: 10),
-                            TextFormField(
-                              decoration: InputDecoration(
-                                // TODO : prefix icon 원하는 icon 입력, color는 palette의 iconColor
-                                prefixIcon: Icon(Icons.lock, color: Palette.iconColor,),
-                                enabledBorder: OutlineInputBorder(
-                                  // TODO : borderside 색은 palette의 textColot1
-                                  // TODO : border radius는 모두 35
-                                    borderSide: BorderSide(color: Palette.textColor1),
-                                    borderRadius: BorderRadius.all(Radius.circular(35))
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  // TODO : borderside 색은 palette의 textColot1
-                                  // TODO : border radius는 모두 35
-                                    borderSide: BorderSide(color: Palette.textColor1),
-                                    borderRadius: BorderRadius.all(Radius.circular(35))
-                                ),
-                                hintText: 'password'
-                              ),)
-                          ]:[
-                            TextFormField(
-                              decoration: InputDecoration(
-                                // TODO : prefix icon 원하는 icon 입력, color는 palette의 iconColor
-                                prefixIcon: Icon(Icons.account_circle, color: Palette.iconColor,),
-                                enabledBorder: OutlineInputBorder(
-                                  // TODO : borderside 색은 palette의 textColot1
-                                  // TODO : border radius는 모두 35
-                                    borderSide: BorderSide(color: Palette.textColor1),
-                                    borderRadius: BorderRadius.all(Radius.circular(35))
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  // TODO : borderside 색은 palette의 textColot1
-                                  // TODO : border radius는 모두 35
-                                    borderSide: BorderSide(color: Palette.textColor1),
-                                    borderRadius: BorderRadius.all(Radius.circular(35))
-                                ),
-                              hintText: 'User name'),),
-                            SizedBox(height: 10),
-                            TextFormField(
-                              decoration: InputDecoration(
-                                // TODO : prefix icon 원하는 icon 입력, color는 palette의 iconColor
-                                prefixIcon: Icon(Icons.email, color: Palette.iconColor,),
-                                enabledBorder: OutlineInputBorder(
-                                  // TODO : borderside 색은 palette의 textColot1
-                                  // TODO : border radius는 모두 35
-                                    borderSide: BorderSide(color: Palette.textColor1),
-                                    borderRadius: BorderRadius.all(Radius.circular(35))
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  // TODO : borderside 색은 palette의 textColot1
-                                  // TODO : border radius는 모두 35
-                                    borderSide: BorderSide(color: Palette.textColor1),
-                                    borderRadius: BorderRadius.all(Radius.circular(35))
-                                ),
-                              hintText: 'email'),),
-                            SizedBox(height: 10),
-                            TextFormField(
-                              decoration: InputDecoration(
-                                // TODO : prefix icon 원하는 icon 입력, color는 palette의 iconColor
-                                prefixIcon: Icon(Icons.lock, color: Palette.iconColor,),
-                                enabledBorder: OutlineInputBorder(
-                                  // TODO : borderside 색은 palette의 textColot1
-                                  // TODO : border radius는 모두 35
-                                    borderSide: BorderSide(color: Palette.textColor1),
-                                    borderRadius: BorderRadius.all(Radius.circular(35))
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  // TODO : borderside 색은 palette의 textColot1
-                                  // TODO : border radius는 모두 35
-                                    borderSide: BorderSide(color: Palette.textColor1),
-                                    borderRadius: BorderRadius.all(Radius.circular(35))
-                                ),
-                              hintText: 'password'),)
-                          ]
-                        ),))]),)),
-            AnimatedPositioned(
-                duration: Duration( milliseconds:500),
-                curve: Curves.easeIn,
-                top: _isLoginButtonPressed == true ? 350 : 390,
-                right:0,
-                left:0,
-                child: Center(
-                    child: Container(// TODO : padding은 모두 15, height 90, width 90
-                    padding: EdgeInsets.all(15),
-                    height: 90,
-                    width: 90,
-                    decoration: BoxDecoration(
-                        color: Colors.white, borderRadius: BorderRadius.all(Radius.circular(50))),
-                    child: Container(
-                        decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                                colors: [Colors.lightGreen, Colors.green],
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight),
-                      borderRadius: BorderRadius.circular(30),
-                      boxShadow: [
-                        BoxShadow(color: Colors.black.withOpacity(0.3),
-                            spreadRadius: 1,
-                            blurRadius: 1,
-                            offset: Offset(0, 1))]),
-                    child: Icon(
-                        Icons.arrow_forward_sharp, color: Colors.white,
-                    // TODO : 화살표 icon, 색은 하얀색
-                      ))))),
-        Positioned(
-          top: MediaQuery.of(context).size.height - 125,
-          right: 0,
-          left: 0,
-        // TODO : top은 핸드폰 세로길이에서 – 125, right 0, left 0
-          child: Column(
-            children: [
-              Text('or Signin with'),
-              SizedBox(height: 10),
-              // TODO : LOGIN 누르면 ‘or Signin with’
-              // SIGNUP 누르면 ‘or Signin with’
-              // SizedBox height 10으로 사이 공간 주기
-              TextButton.icon(
-                onPressed: () {},
-                  icon:Icon(Icons.add),
-                  label: Text('Google'),
-                  style: TextButton.styleFrom(
-                  primary: Colors.white,
-                  minimumSize: Size(155, 40),
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20)
+                                  color: Colors.white),
+                              children: [
+                                TextSpan(
+                                  text: isSignupScreen ? ' to EOS chat!' : ' back',
+                                  style: TextStyle(
+                                      letterSpacing: 1.0,
+                                      fontSize: 25,
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold),
+                                )
+                              ])),
+                      SizedBox(height: 5.0),
+                      Text(
+                          isSignupScreen
+                              ? 'Signup to continue'
+                              : 'Signin to continue',
+                          style: TextStyle(
+                              letterSpacing: 1.0, color: Colors.white))
+                    ],
                   ),
-                  backgroundColor: Colors.blue)
+                ),
+              )),
+          // 텍스트 폼 필드
+          AnimatedPositioned(
+              duration: Duration(milliseconds: 500),
+              curve: Curves.easeIn,
+              top: 180,
+              child: AnimatedContainer(
+                  duration: Duration(milliseconds: 500),
+                  curve: Curves.easeIn,
+                  padding: EdgeInsets.all(20.0),
+                  height: isSignupScreen ? 280.0 : 250.0,
+                  // 디바이스의 가로 길이 알아내는 법
+                  // 화면 돌려도 박스 크기 맞춰짐
+                  width: MediaQuery.of(context).size.width - 40,
+                  margin: EdgeInsets.symmetric(horizontal: 20.0),
+                  decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(15.0),
+                      boxShadow: [
+                        BoxShadow(
+                            color: Colors.black.withOpacity(0.3),
+                            blurRadius: 15,
+                            spreadRadius: 5)
+                      ]),
+                  child: Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                isSignupScreen = false;
+                              });
+                            },
+                            child: Column(
+                              children: [
+                                Text('LOGIN',
+                                    style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                        color: !isSignupScreen
+                                            ? Palette.activeColor
+                                            : Palette.textColor1)),
+                                // isSignupScreen이 false일 때 만 밑줄이 생긴다.
+                                if (!isSignupScreen)
+                                  Container(
+                                      margin: EdgeInsets.only(top: 3),
+                                      height: 2,
+                                      width: 55,
+                                      color: Colors.green)
+                              ],
+                            ),
+                          ),
+                          GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                isSignupScreen = true;
+                              });
+                            },
+                            child: Column(
+                              children: [
+                                Text('SIGNUP',
+                                    style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                        color: isSignupScreen
+                                            ? Palette.activeColor
+                                            : Palette.textColor1)),
+                                if (isSignupScreen)
+                                  Container(
+                                      margin: EdgeInsets.only(top: 3),
+                                      height: 2,
+                                      width: 55,
+                                      color: Colors.green)
+                              ],
+                            ),
+                          )
+                        ],
+                      ),
+                      // inline if
+                      if (isSignupScreen)
+                        Container(
+                            margin: EdgeInsets.only(top: 20),
+                            child: Form(
+                                child: Column(
+                                  children: [
+                                    TextFormField(
+                                      onSaved: (value) {
+                                        userName = value!;
+                                      },
+                                      onChanged: (value) {
+                                        userName = value;
+                                      },
+                                      decoration: InputDecoration(
+                                          prefixIcon: Icon(
+                                            Icons.account_circle,
+                                            color: Palette.iconColor,
+                                          ),
+                                          enabledBorder: OutlineInputBorder(
+                                              borderSide: BorderSide(
+                                                  color: Palette.textColor1),
+                                              borderRadius: BorderRadius.all(
+                                                  Radius.circular(35.0))),
+                                          focusedBorder: OutlineInputBorder(
+                                              borderSide: BorderSide(
+                                                  color: Palette.textColor1),
+                                              borderRadius: BorderRadius.all(
+                                                  Radius.circular(35.0))),
+                                          hintText: 'User name',
+                                          hintStyle: TextStyle(
+                                              fontSize: 14,
+                                              color: Palette.textColor1),
+                                          contentPadding: EdgeInsets.all(10)),
+                                    ),
+                                    SizedBox(height: 8),
+                                    TextFormField(
+                                      keyboardType: TextInputType.emailAddress,
+                                      onSaved: (value) {
+                                        userEmail = value!;
+                                      },
+                                      onChanged: (value) {
+                                        userEmail = value;
+                                      },
+                                      decoration: InputDecoration(
+                                          prefixIcon: Icon(
+                                            Icons.email,
+                                            color: Palette.iconColor,
+                                          ),
+                                          enabledBorder: OutlineInputBorder(
+                                              borderSide: BorderSide(
+                                                  color: Palette.textColor1),
+                                              borderRadius: BorderRadius.all(
+                                                  Radius.circular(35.0))),
+                                          focusedBorder: OutlineInputBorder(
+                                              borderSide: BorderSide(
+                                                  color: Palette.textColor1),
+                                              borderRadius: BorderRadius.all(
+                                                  Radius.circular(35.0))),
+                                          hintText: 'email',
+                                          hintStyle: TextStyle(
+                                              fontSize: 14,
+                                              color: Palette.textColor1),
+                                          contentPadding: EdgeInsets.all(10)),
+                                    ),
+                                    SizedBox(height: 8),
+                                    TextFormField(
+                                      obscureText: true,
+                                      onSaved: (value) {
+                                        userPassword = value!;
+                                      },
+                                      onChanged: (value) {
+                                        userPassword = value;
+                                      },
+                                      decoration: InputDecoration(
+                                          prefixIcon: Icon(
+                                            Icons.lock,
+                                            color: Palette.iconColor,
+                                          ),
+                                          enabledBorder: OutlineInputBorder(
+                                              borderSide: BorderSide(
+                                                  color: Palette.textColor1),
+                                              borderRadius: BorderRadius.all(
+                                                  Radius.circular(35.0))),
+                                          focusedBorder: OutlineInputBorder(
+                                              borderSide: BorderSide(
+                                                  color: Palette.textColor1),
+                                              borderRadius: BorderRadius.all(
+                                                  Radius.circular(35.0))),
+                                          hintText: 'password',
+                                          hintStyle: TextStyle(
+                                              fontSize: 14,
+                                              color: Palette.textColor1),
+                                          contentPadding: EdgeInsets.all(10)),
+                                    )
+                                  ],
+                                ))),
+                      if (!isSignupScreen)
+                        Container(
+                            margin: EdgeInsets.only(top: 20),
+                            child: Form(
+                              child: Column(
+                                children: [
+                                  TextFormField(
+                                    keyboardType: TextInputType.emailAddress,
+                                    onSaved: (value) {
+                                      userEmail = value!;
+                                    },
+                                    onChanged: (value) {
+                                      userEmail = value;
+                                    },
+                                    decoration: InputDecoration(
+                                        prefixIcon: Icon(
+                                          Icons.email,
+                                          color: Palette.iconColor,
+                                        ),
+                                        enabledBorder: OutlineInputBorder(
+                                            borderSide: BorderSide(
+                                                color: Palette.textColor1),
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(35.0))),
+                                        focusedBorder: OutlineInputBorder(
+                                            borderSide: BorderSide(
+                                                color: Palette.textColor1),
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(35.0))),
+                                        hintText: 'email',
+                                        hintStyle: TextStyle(
+                                            fontSize: 14,
+                                            color: Palette.textColor1),
+                                        contentPadding: EdgeInsets.all(10)),
+                                  ),
+                                  SizedBox(height: 8.0),
+                                  TextFormField(
+                                    obscureText: true,
+                                    onSaved: (value) {
+                                      userPassword = value!;
+                                    },
+                                    onChanged: (value) {
+                                      userPassword = value;
+                                    },
+                                    decoration: InputDecoration(
+                                        prefixIcon: Icon(
+                                          Icons.lock,
+                                          color: Palette.iconColor,
+                                        ),
+                                        enabledBorder: OutlineInputBorder(
+                                            borderSide: BorderSide(
+                                                color: Palette.textColor1),
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(35.0))),
+                                        focusedBorder: OutlineInputBorder(
+                                            borderSide: BorderSide(
+                                                color: Palette.textColor1),
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(35.0))),
+                                        hintText: 'password',
+                                        hintStyle: TextStyle(
+                                            fontSize: 14,
+                                            color: Palette.textColor1),
+                                        contentPadding: EdgeInsets.all(10)),
+                                  ),
+                                ],
+                              ),
+                            ))
+                    ],
+                  ))),
+          // 전송 버튼
+          AnimatedPositioned(
+              duration: Duration(milliseconds: 500),
+              curve: Curves.easeIn,
+              top: isSignupScreen ? 430 : 390,
+              right: 0,
+              left: 0,
+              child: Center(
+                  child: Container(
+                      padding: EdgeInsets.all(15),
+                      height: 90,
+                      width: 90,
+                      decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(50)),
+                      child: GestureDetector(
+                          onTap: () async {
+                            if (isSignupScreen) {
+                              try {
+                                final newUser = await _authentication
+                                    .createUserWithEmailAndPassword(
+                                    email: userEmail,
+                                    password: userPassword);
 
-                  // TODO : 배경색은 palette의 googleColor
-                  // TODO : 더하기 아이콘 넣고 ‘Google’ 쓰기
-    ),]))]),);}
+                                // user id 저장
+                                await FirebaseFirestore.instance
+                                    .collection('user')
+                                    .doc(newUser.user!.uid)
+                                    .set({
+                                  'userName': userName,
+                                  'email': userEmail,
+                                });
+                                if (newUser.user != null) {
+                                  Navigator.push(context,
+                                      MaterialPageRoute(builder: (context) {
+                                        return ChatScreen();
+                                      }));
+                                }
+                              } catch (e) {
+                                print(e);
+                                ScaffoldMessenger.of(context)
+                                    .showSnackBar(SnackBar(
+                                  content: Text(
+                                      'Please check your email and password'),
+                                  backgroundColor: Colors.blue,
+                                ));
+                              }
+                            }
+                            if (!isSignupScreen) {
+                              try {
+                                final newUser = await _authentication
+                                    .signInWithEmailAndPassword(
+                                    email: userEmail,
+                                    password: userPassword);
+                                if (newUser.user != null) {}
+                              } catch (e) {
+                                print(e);
+                              }
+                            }
+                          },
+                          child: Container(
+                              decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                      colors: [Colors.lightGreen, Colors.green],
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.bottomRight),
+                                  borderRadius: BorderRadius.circular(30),
+                                  boxShadow: [
+                                    BoxShadow(
+                                        color: Colors.black.withOpacity(0.3),
+                                        spreadRadius: 1,
+                                        blurRadius: 1,
+                                        offset: Offset(0, 1))
+                                  ]),
+                              child: Icon(
+                                Icons.arrow_forward,
+                                color: Colors.white,
+                              )))))),
+          // signup 버튼
+          Positioned(
+              top: MediaQuery.of(context).size.height - 125,
+              right: 0,
+              left: 0,
+              child: Column(
+                children: [
+                  Text(isSignupScreen ? 'or Signup with' : 'or Signin with'),
+                  SizedBox(height: 10),
+                  TextButton.icon(
+                      onPressed: () {},
+                      style: TextButton.styleFrom(
+                          primary: Colors.white,
+                          minimumSize: Size(155, 40),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20)),
+                          backgroundColor: Palette.googleColor),
+                      icon: Icon(Icons.add),
+                      label: Text('Google'))
+                ],
+              ))
+        ],
+      ),
+    );
+  }
 }
-
-
-
